@@ -231,6 +231,10 @@ cd logintel_ui && npm run lint && npm run build   # frontend
 
 On Windows with the project environment: `.venv/Scripts/python.exe -m pytest -q`. CI runs backend, frontend and gateway checks on every push and pull request.
 
+### Detector benchmark
+
+`python -m benchmark.run` scores clustering, outlier flags, category rules, spike detection and risk ranking against labeled synthetic scenarios. `tests/test_benchmark.py` fails CI if a score drops below its floor. See [benchmark/README.md](benchmark/README.md).
+
 ## Documentation
 
 | Guide | Topic |
