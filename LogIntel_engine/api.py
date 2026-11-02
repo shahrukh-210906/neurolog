@@ -12,15 +12,13 @@ import csv
 import io
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException, Unauthorized
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import DBSCAN
 try:
-    from LogIntel_engine.analysis import analyze, detect_patterns, normalize_message
-    from LogIntel_engine.intelligence import cluster_labels, investigate, stored_minute_counts, vector_space
+    from LogIntel_engine.analysis import analyze, detect_patterns
+    from LogIntel_engine.intelligence import cluster_labels, cluster_messages, investigate, stored_minute_counts, vector_space
     from LogIntel_engine.github_integration import register_github
 except ImportError:
-    from analysis import analyze, detect_patterns, normalize_message
-    from intelligence import cluster_labels, investigate, stored_minute_counts, vector_space
+    from analysis import analyze, detect_patterns
+    from intelligence import cluster_labels, cluster_messages, investigate, stored_minute_counts, vector_space
     from github_integration import register_github
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -605,12 +603,9 @@ def create_app(config=None):
         records = recent(owner)
         if len(records) < 5:
             return jsonify(status='At least 5 logs are needed for clustering.', anomalies_detected=0)
-        try:
-            vectors = TfidfVectorizer(stop_words='english', max_features=5000).fit_transform([
-                normalize_message(r['message']) for r in records])
-        except ValueError:
+        clusters = cluster_messages(records)
+        if clusters is None:
             return jsonify(status='No usable words for vectorization.', anomalies_detected=0)
-        clusters = DBSCAN(eps=0.5, min_samples=2).fit_predict(vectors)
         for record, cluster in zip(records, clusters):
             db().execute('UPDATE logs SET ml_anomaly=?,cluster_id=? WHERE _id=? AND uid=?',
                          (int(cluster == -1), int(cluster), record['_id'], owner))

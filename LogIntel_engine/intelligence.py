@@ -5,6 +5,7 @@ import hashlib
 import statistics
 import time
 import numpy as np
+from sklearn.cluster import DBSCAN
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics.pairwise import cosine_similarity
@@ -163,6 +164,19 @@ def investigate(records, suppressed=(), rules=(), window_minutes=5, minute_count
                      suppressed=sum(r['suppressed'] for r in enriched), spikes=len(spikes),
                      analysis_ms=round((time.perf_counter()-started)*1000,2)),
         window_minutes=window_minutes, method='Transparent severity + recurrence + volume spike + outlier heuristic; not XGBoost')
+
+
+def cluster_messages(records, eps=0.5, min_samples=2):
+    """TF-IDF + DBSCAN over normalized messages, as run by /api/run-ml.
+
+    Returns one cluster ID per record (-1 marks an outlier), or None when no usable words remain.
+    """
+    try:
+        vectors = TfidfVectorizer(stop_words='english', max_features=5000).fit_transform(
+            [normalize_message(r['message']) for r in records])
+    except ValueError:
+        return None
+    return DBSCAN(eps=eps, min_samples=min_samples).fit_predict(vectors)
 
 
 def cluster_labels(records, top_terms=3):
