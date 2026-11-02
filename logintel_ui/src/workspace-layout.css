@@ -32,7 +32,7 @@
 .github-resolution-tag.still_failing{background:var(--danger-bg);color:var(--danger)}
 .github-resolution-tag.likely_resolved{background:var(--success-bg);color:var(--success)}
 /* Overview ends after the current activity and errors. */
-.overview-page .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr));border:0;background:none;gap:24px;border-radius:0;margin-bottom:32px}
+.overview-page .stats-grid{grid-template-columns:repeat(5,minmax(0,1fr));border:0;background:none;gap:24px;border-radius:0;margin-bottom:32px}
 .overview-page .stat-card{background:none;border:0;border-bottom:1px solid var(--border);padding:0 0 24px}
 .overview-page .stat-card>div>svg{display:none}
 .overview-page .stat-card>strong{font-size:34px;margin:10px 0 4px}
@@ -149,3 +149,17 @@
 
 .source-shortcut{white-space:nowrap;font-size:11px;min-height:34px;padding:7px 10px}
 @media(max-width:600px){.topbar .workspace-top-label,.topbar-location>svg{display:none}.source-shortcut{font-size:10px;padding:6px 8px}}
+
+/* Signal controls use existing workspace tokens and retain native focus feedback. */
+.severity-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px}
+.severity-chips button{display:inline-flex;align-items:center;gap:10px;min-height:44px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-muted);padding:8px 12px}
+.severity-chips button[aria-pressed="true"]{color:var(--text);border-color:currentColor}
+.severity-chips button span{font-variant-numeric:tabular-nums;min-width:1.5em;text-align:right}
+.severity-chips button:focus-visible,.suppression-row button:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.suppression-manager{margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.suppression-manager>p{color:var(--text-muted);line-height:1.6}
+.suppression-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--border)}
+.suppression-row>div{min-width:0}.suppression-row p{overflow-wrap:anywhere;margin:8px 0}.suppression-row small{color:var(--text-muted)}
+.suppression-row button{flex-shrink:0;min-height:44px}
+@media(max-width:1100px){.overview-page .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:480px){.overview-page .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.severity-chips{padding:0 12px 12px}.suppression-row{flex-direction:column;gap:12px}}
